@@ -1,4 +1,4 @@
-class DynamoDB::Mapper
+class Mapymo::Mapper
 
   cattr_accessor :mapped_classes
 
@@ -10,7 +10,7 @@ class DynamoDB::Mapper
     @dynamo_db_mapper_config = dynamo_db_mapper_config
 
     unless @dynamo_db_client.is_a?(Aws::DynamoDB::Client)
-      raise DynamoDB::Mapper::Error.new("Expected #{Aws::DynamoDB::Client} but got #{@dynamo_db_client.class}")
+      raise Mapper::Error.new("Expected #{Aws::DynamoDB::Client} but got #{@dynamo_db_client.class}")
     end
   end
 
@@ -30,7 +30,7 @@ class DynamoDB::Mapper
     begin
       object_class.new(item_attribute_hash)
     rescue NoMethodError => e
-      raise DynamoDB::Mapper::Error.new("Unable to marshal #{item} into #{object_class} using attribute map #{attribute_map}, #{e.message}")
+      raise Mapper::Error.new("Unable to marshal #{item} into #{object_class} using attribute map #{attribute_map}, #{e.message}")
     end
   end
 
@@ -45,7 +45,7 @@ class DynamoDB::Mapper
     begin
       attribute_map.each { |dynamo_attr, object_attr| item_hash[dynamo_attr] = object.send(object_attr) }
     rescue NoMethodError => e
-      raise DynamoDB::Mapper::Error.new("Unable to marshal #{object.inspect} into item using attribute_map #{attribute_map}")
+      raise Mapper::Error.new("Unable to marshal #{object.inspect} into item using attribute_map #{attribute_map}")
     end
     item_hash
   end

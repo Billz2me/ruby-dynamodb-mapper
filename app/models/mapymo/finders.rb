@@ -16,17 +16,17 @@ module Mapymo::Finders
     # consistent_read - true/false for consistent read. Default to false.
     #
     # Returns an object of this class if found, otherwise nil.
-    def find(hash_key, range_key = nil, consistent_read = false)
-      if self.dynamodb_config.range_key.present? && hash_key.nil?
-        raise Error.new("hash_key is required to find #{self.name}")
+    def find(hash_key, range_key = nil, options = {})
+      if hash_key.nil? ||(self.dynamodb_config.range_key.present? && range_key.nil?)
+        raise ArgumentError.new("Invalid key attributes provided to find #{self.name}")
       end
-      self.dynamodb_config.mapper.load(self, hash_key, range_key, { consistent_read: consistent_read })
+      self.dynamodb_config.mapper.db_load(self, hash_key, range_key, options)
     end
 
     # Public: Does a consistent read and raises Mapymo::Finders::RecordNotFound if the record does not exist.
     # See #find.
-    def find!(hash_key, range_key = nil)
-      result = find(hash_key, range_key, true)
+    def find!(hash_key, range_key = nil, options = {})
+      result = find(hash_key, range_key, options)
       raise RecordNotFound.new("#{self.name} with hash_key #{hash_key} and range_key #{range_key} was not found.") if result.nil?
       result
     end

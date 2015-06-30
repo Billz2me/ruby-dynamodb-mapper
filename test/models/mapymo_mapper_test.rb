@@ -105,28 +105,28 @@ class MapymoMapperTest < ActiveSupport::TestCase
   end
 
   ##########################################################################
-  #                                   load                                 #
+  #                                   db_load                                 #
   ##########################################################################
 
-  test 'load should correctly call @client#get_item with hash key' do
+  test 'db_load should correctly call @client#get_item with hash key' do
     response = OpenStruct.new(:item => nil)
 
     @client.expects(:get_item).with({ :key        => { MappedObject::HASH_KEY => @test_hash_key },
                                       :table_name => MappedObject.dynamodb_config.table_name}).once.returns(response)
     @mapper.expects(:marshal_into_object).with(MappedObject, response.item).once
 
-    @mapper.load(MappedObject, @test_hash_key)
+    @mapper.db_load(MappedObject, @test_hash_key)
   end
 
-  test 'load should merge in the options to the @client#get_item call' do
+  test 'db_load should merge in the options to the @client#get_item call' do
     @client.expects(:get_item).with({ :key         => { MappedObject::HASH_KEY => @test_hash_key },
                                       :table_name  => MappedObject.dynamodb_config.table_name,
                                       :some_option => "my option" }).once.returns(OpenStruct.new)
 
-    @mapper.load(MappedObject, @test_hash_key, nil, { :some_option => "my option" })
+    @mapper.db_load(MappedObject, @test_hash_key, nil, { :some_option => "my option" })
   end
 
-  test 'load should correctly call @client#get_item with hash and range key' do
+  test 'db_load should correctly call @client#get_item with hash and range key' do
     response = OpenStruct.new(:item => nil)
 
     @client.expects(:get_item).with({ :key => { OtherMappedObject::HASH_KEY  => @test_hash_key,
@@ -134,13 +134,13 @@ class MapymoMapperTest < ActiveSupport::TestCase
                                       :table_name => OtherMappedObject.dynamodb_config.table_name}).once.returns(response)
     @mapper.expects(:marshal_into_object).with(OtherMappedObject, response.item).once
 
-    @mapper.load(OtherMappedObject, @test_hash_key, @test_range_key)
+    @mapper.db_load(OtherMappedObject, @test_hash_key, @test_range_key)
   end
 
-  test 'load correctly marshals the response' do
+  test 'db_load correctly marshals the response' do
     response = OpenStruct.new(:item => @mapper.marshal_into_item(@mapped_object))
     @client.expects(:get_item).once.returns(response)
-    result = @mapper.load(MappedObject, 'test')
+    result = @mapper.db_load(MappedObject, 'test')
     assert_kind_of MappedObject, result
     assert_equal @test_hash_key, result.id
     assert_equal @test_attr, result.test_attr

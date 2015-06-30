@@ -66,7 +66,7 @@ class Mapymo::Mapper
   # range_key - (option) The range key of the object.
   # options - (optional) The same as options to Aws::DynamoDB::Client#get_item
   #
-  def load(object_class, hash_key, range_key = nil, get_item_options = {})
+  def db_load(object_class, hash_key, range_key = nil, get_item_options = {})
     result = @dynamo_db_client.get_item(get_item_options.merge({ key: object_class.dynamodb_key(hash_key, range_key),
                                                                  table_name: object_class.dynamodb_config.table_name }))
     marshal_into_object(object_class, result.item)

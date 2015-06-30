@@ -5,6 +5,9 @@ gem 'aws-sdk-core'
 gem 'aws-sdk-resources'
 gem 'dynamoid'
 
+# Test mocks
+gem 'mocha'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.1'
 # Use sqlite3 as the database for Active Record
